@@ -10,3 +10,5 @@ serde_json = "1.0.38"
 
 [[bin]]
 name = "shrink-json"
+[[bin]]
+name = "json-to-js"
