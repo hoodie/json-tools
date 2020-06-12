@@ -10,7 +10,7 @@ fn main() -> Result<(), Box<dyn Error>>{
         .nth(1)
         .and_then(|p| File::open(p).ok())
         .map(BufReader::new)
-        .map(|f| serde_json::from_reader(f))
+        .map(serde_json::from_reader)
         .and_then(Result::ok);
 
     let reserialized = serde_json::to_string(&content)?;
