@@ -5,13 +5,19 @@ authors = ["Hendrik Sollich <hendrik@hoodie.de>"]
 edition = "2018"
 
 [dependencies]
-serde = "1.0"
-serde_json = "1.0"
-toml = "0.5"
-json5 = "0.2"
+serde = "1.0.117"
+toml = "0.5.7"
+json5 = "0.2.8"
+
+[dependencies.serde_json]
+version= "1.0.59"
+features = ["preserve_order"]
 
 [[bin]]
 name = "shrink-json"
+
+[[bin]]
+name = "flatten-json"
 
 [[bin]]
 name = "json2js"
