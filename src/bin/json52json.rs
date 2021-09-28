@@ -1,9 +1,6 @@
-use json5;
-use serde_json;
-
 use std::env;
 use std::error::Error;
-use std::fs::{read_to_string};
+use std::fs::read_to_string;
 
 fn main() -> Result<(), Box<dyn Error>> {
     let content: Option<serde_json::Value> = env::args()

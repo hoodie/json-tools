@@ -1,20 +1,9 @@
-use serde_json;
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    json_tools::with_toml_value(|content| {
+        let reserialized = serde_json::to_string_pretty(&content)?;
 
-use std::env;
-use std::error::Error;
-use std::fs::{read_to_string};
-use std::str::FromStr;
+        println!("{}", reserialized);
 
-fn main() -> Result<(), Box<dyn Error>> {
-    let content: Option<toml::Value> = env::args()
-        .nth(1)
-        .map(|p| read_to_string(&p).unwrap())
-        .map(|s| toml::Value::from_str(&s))
-        .and_then(Result::ok);
-
-    let reserialized = serde_json::to_string_pretty(&content)?;
-
-    println!("{}", reserialized);
-
-    Ok(())
+        Ok(())
+    })
 }

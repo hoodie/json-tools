@@ -1,0 +1,60 @@
+use std::error::Error;
+use std::fs::File;
+use std::io::Read;
+use std::str::FromStr;
+use std::{env, io};
+
+fn json_value_from_arg(arg: &str) -> Result<serde_json::Value, Box<dyn Error>> {
+    let (mut std_in, mut file);
+    let readable: &mut dyn io::Read = if arg == "-" {
+        std_in = io::stdin();
+        &mut std_in
+    } else {
+        file = File::open(arg)?;
+        &mut file
+    };
+
+    Ok(serde_json::from_reader(readable)?)
+}
+
+fn toml_value_from_arg(arg: &str) -> Result<toml::Value, Box<dyn Error>> {
+    let readable = if arg == "-" {
+        let mut content = String::new();
+        io::stdin().read_to_string(&mut content)?;
+        content
+    } else {
+        std::fs::read_to_string(arg)?
+    };
+
+    Ok(toml::Value::from_str(&readable)?)
+}
+
+pub fn with_json_value<F>(closure: F) -> Result<(), Box<dyn Error>>
+where
+    F: Fn(serde_json::Value) -> Result<(), Box<dyn Error>>,
+{
+    if let Some(arg) = env::args().nth(1) {
+        let content = self::json_value_from_arg(&arg)?;
+
+        closure(content)?;
+    } else {
+        println!("No argument given. Either pass file name of \"-\" for stdin.")
+    }
+
+    Ok(())
+}
+
+pub fn with_toml_value<F>(closure: F) -> Result<(), Box<dyn Error>>
+where
+    F: Fn(toml::Value) -> Result<(), Box<dyn Error>>,
+{
+    if let Some(arg) = env::args().nth(1) {
+        let content = self::toml_value_from_arg(&arg)?;
+
+        closure(content)?;
+    } else {
+        println!("No argument given. Either pass file name of \"-\" for stdin.")
+    }
+
+    Ok(())
+}

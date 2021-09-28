@@ -1,9 +1,6 @@
 use serde_json::Value;
 
-use std::env;
 use std::error::Error;
-use std::fs::File;
-use std::io::BufReader;
 
 fn needs_escape(input: &str) -> bool {
     input.contains(|c| matches!(c, '.' | '@' | '=' | ' ' | '\x09'..='\x0d'| '0'..='9'))
@@ -30,7 +27,7 @@ fn flatten(trail: &str, paths: &mut Vec<String>, value: &Value) {
                     .concat(),
                 )
             } else {
-                paths.push([trail, dot(trail, " = "), &s].concat())
+                paths.push([trail, dot(trail, " = "), s].concat())
             }
         }
         Value::Bool(s) => {
@@ -49,7 +46,7 @@ fn flatten(trail: &str, paths: &mut Vec<String>, value: &Value) {
                     &(if needs_escape(k) {
                         [trail, dot(trail, "."), &serde_json::to_string(&k).unwrap()].concat()
                     } else {
-                        [trail, dot(trail, "."), &k].concat()
+                        [trail, dot(trail, "."), k].concat()
                     }),
                     paths,
                     v,
@@ -60,19 +57,10 @@ fn flatten(trail: &str, paths: &mut Vec<String>, value: &Value) {
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
-    let content: Option<Value> = env::args()
-        .nth(1)
-        .and_then(|p| File::open(p).ok())
-        .map(BufReader::new)
-        .map(serde_json::from_reader)
-        .and_then(Result::ok);
-
-    if let Some(content) = content {
-        // flatten(&content, None, &mut list);
+    json_tools::with_json_value(|content| {
         let mut list = Vec::new();
         flatten("", &mut list, &content);
         println!("{}", list.join("\n"));
-    }
-
-    Ok(())
+        Ok(())
+    })
 }

@@ -2,15 +2,15 @@
 name = "json-tools"
 version = "0.1.0"
 authors = ["Hendrik Sollich <hendrik@hoodie.de>"]
-edition = "2018"
+edition = "2021"
 
 [dependencies]
-serde = "1.0.117"
-toml = "0.5.7"
-json5 = "0.2.8"
+serde = "1.0"
+toml = "0.5"
+json5 = "0.4"
 
 [dependencies.serde_json]
-version= "1.0.59"
+version= "1.0"
 features = ["preserve_order"]
 
 [[bin]]
@@ -24,7 +24,6 @@ name = "json2js"
 
 [[bin]]
 name = "json52json"
-
 
 [[bin]]
 name = "toml2json"
