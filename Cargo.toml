@@ -24,6 +24,9 @@ name = "shrink-json"
 name = "flatten-json"
 
 [[bin]]
+name = "unflatten-json"
+
+[[bin]]
 name = "json2js"
 
 [[bin]]
