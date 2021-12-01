@@ -27,3 +27,9 @@ name = "json52json"
 
 [[bin]]
 name = "toml2json"
+
+[profile.release]
+opt-level = 'z'
+lto = true
+codegen-units = 1
+panic = "abort"
