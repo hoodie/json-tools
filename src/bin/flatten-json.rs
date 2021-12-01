@@ -2,7 +2,7 @@ use serde_json::Value;
 
 use std::error::Error;
 
-fn needs_escape(input: &str) -> bool {
+fn needs_quotes(input: &str) -> bool {
     input.contains(|c| matches!(c, '.' | '@' | '=' | ' ' | '\x09'..='\x0d'| '0'..='9'))
 }
 
@@ -16,20 +16,14 @@ fn dot<'a>(input: &str, sep: &'a str) -> &'a str {
 
 fn flatten(trail: &str, paths: &mut Vec<String>, value: &Value) {
     match value {
-        Value::String(s) => {
-            if needs_escape(s) {
-                paths.push(
-                    [
-                        trail,
-                        dot(trail, " = "),
-                        &serde_json::to_string(&s).unwrap(),
-                    ]
-                    .concat(),
-                )
-            } else {
-                paths.push([trail, dot(trail, " = "), s].concat())
-            }
-        }
+        Value::String(s) => paths.push(
+            [
+                trail,
+                dot(trail, " = "),
+                &serde_json::to_string(&s).unwrap(),
+            ]
+            .concat(),
+        ),
         Value::Bool(s) => {
             paths.push([trail, dot(trail, " = "), if *s { "true" } else { "false" }].concat())
         }
@@ -43,7 +37,7 @@ fn flatten(trail: &str, paths: &mut Vec<String>, value: &Value) {
         Value::Object(o) => {
             for (k, v) in o {
                 flatten(
-                    &(if needs_escape(k) {
+                    &(if needs_quotes(k) {
                         [trail, dot(trail, "."), &serde_json::to_string(&k).unwrap()].concat()
                     } else {
                         [trail, dot(trail, "."), k].concat()
