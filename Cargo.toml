@@ -6,8 +6,12 @@ edition = "2021"
 
 [dependencies]
 serde = "1.0"
-toml = "0.5"
 json5 = "0.4"
+serde_yaml = "0.8"
+
+[dependencies.toml]
+version = "0.5"
+features = ["preserve_order"]
 
 [dependencies.serde_json]
 version= "1.0"
@@ -26,7 +30,13 @@ name = "json2js"
 name = "json52json"
 
 [[bin]]
+name = "yaml2json"
+
+[[bin]]
 name = "toml2json"
+
+[[bin]]
+name = "json2toml"
 
 [profile.release]
 opt-level = 'z'

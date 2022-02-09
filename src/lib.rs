@@ -17,6 +17,19 @@ fn json_value_from_arg(arg: &str) -> Result<serde_json::Value, Box<dyn Error>> {
     Ok(serde_json::from_reader(readable)?)
 }
 
+fn yaml_value_from_arg(arg: &str) -> Result<serde_yaml::Value, Box<dyn Error>> {
+    let (mut std_in, mut file);
+    let readable: &mut dyn io::Read = if arg == "-" {
+        std_in = io::stdin();
+        &mut std_in
+    } else {
+        file = File::open(arg)?;
+        &mut file
+    };
+
+    Ok(serde_yaml::from_reader(readable)?)
+}
+
 fn toml_value_from_arg(arg: &str) -> Result<toml::Value, Box<dyn Error>> {
     let readable = if arg == "-" {
         let mut content = String::new();
@@ -35,6 +48,21 @@ where
 {
     if let Some(arg) = env::args().nth(1) {
         let content = self::json_value_from_arg(&arg)?;
+
+        closure(content)?;
+    } else {
+        println!("No argument given. Either pass file name of \"-\" for stdin.")
+    }
+
+    Ok(())
+}
+
+pub fn with_yaml_value<F>(closure: F) -> Result<(), Box<dyn Error>>
+where
+    F: Fn(serde_yaml::Value) -> Result<(), Box<dyn Error>>,
+{
+    if let Some(arg) = env::args().nth(1) {
+        let content = self::yaml_value_from_arg(&arg)?;
 
         closure(content)?;
     } else {
