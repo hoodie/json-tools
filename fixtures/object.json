@@ -1,0 +1,7 @@
+{
+  "string": "4711",
+  "obj": {
+    "string": ["4711"]
+  },
+  "none": null
+}

@@ -1,0 +1,16 @@
+{
+  "array_of_numbers": [1, 2, 3, 4, 5],
+  "array_of_strings": ["1", "2", "3", "4", "5"],
+  "array_of_nothing": [],
+  "number": 4711,
+  "string": "4711",
+  "null": null,
+  "object": {
+    "array_of_numbers": [1, 2, 3, 4, 5],
+    "array_of_strings": ["1", "2", "3", "4", "5"],
+    "array_of_nothing": [],
+    "number": 4711,
+    "string": "4711",
+    "null": null
+  }
+}
