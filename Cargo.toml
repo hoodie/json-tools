@@ -8,6 +8,7 @@ edition = "2021"
 serde = "1.0"
 json5 = "0.4"
 serde_yaml = "0.8"
+nom = "7.1.0"
 
 [dependencies.toml]
 version = "0.5"
@@ -22,6 +23,9 @@ name = "shrink-json"
 
 [[bin]]
 name = "flatten-json"
+
+[[bin]]
+name = "unflatten-json"
 
 [[bin]]
 name = "json2js"
