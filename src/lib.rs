@@ -4,8 +4,11 @@ use std::io::Read;
 use std::str::FromStr;
 use std::{env, io};
 
-mod split;
-pub use split::split_smart;
+pub mod path_segments;
+
+#[cfg(all(test))]
+#[macro_use]
+mod assert;
 
 fn json_value_from_arg(arg: &str) -> Result<serde_json::Value, Box<dyn Error>> {
     let (mut std_in, mut file);

@@ -1,7 +1,19 @@
 {
   "string": "4711",
-  "obj": {
+  "object": {
     "string": ["4711"]
   },
+  "array": ["1", 2, "3", 4],
+  "arrays": [
+    ["1", 2, "3", 4],
+    { "foo": "foo", "bar": null },
+    {
+      "something": 1,
+      "nothing": null,
+      "no-such-thing": null,
+      "more-things": ["thing", "thing"],
+      "special-things": { "special": "thing" }
+    }
+  ],
   "none": null
 }

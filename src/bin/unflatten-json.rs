@@ -1,10 +1,5 @@
+use json_tools::path_segments::PathSegment;
 use serde_json::{Map, Value};
-
-#[derive(Debug)]
-enum PathSegment<'a> {
-    Name(&'a str),
-    Index(usize),
-}
 
 trait ValueExt {
     fn insert_into(&mut self, ps: &PathSegment, value: Value);
@@ -45,29 +40,6 @@ impl ValueExt for Value {
     }
 }
 
-fn from_utf8(bytes: &[u8]) -> Option<&str> {
-    std::str::from_utf8(bytes).ok().filter(|s| !s.is_empty())
-}
-
-fn parse_path(raw: &str) -> impl Iterator<Item = PathSegment<'_>> {
-    //raw.split('.')
-    json_tools::split_smart(raw)
-        .into_iter()
-        .filter_map(|seg| match seg.as_bytes() {
-            [start @ .., b']'] => {
-                //ends on index bracked
-                from_utf8(start).map(|s| pair_or_single(s, "["))
-            }
-            [bytes @ ..] => from_utf8(bytes).map(|s| (s, None)),
-        })
-        .flat_map(|(seg, i)| {
-            Some(PathSegment::Name(seg)).into_iter().chain(
-                i.map(|i| i.parse::<usize>().unwrap())
-                    .map(PathSegment::Index),
-            )
-        })
-}
-
 fn pair_or_single<'a>(line: &'a str, delimiter: &'static str) -> (&'a str, Option<&'a str>) {
     if let Some((key, val)) = line.split_once(delimiter) {
         (key.trim(), Some(val.trim()))
@@ -78,16 +50,11 @@ fn pair_or_single<'a>(line: &'a str, delimiter: &'static str) -> (&'a str, Optio
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     json_tools::with_string_content(|content| {
-        let unflattened = content
+        let unflattened: Vec<(Vec<PathSegment>, Option<&str>)> = content
             .lines()
             .map(|l| pair_or_single(l, "="))
-            .map(|(k, v)| {
-                (
-                    parse_path(k).collect::<Vec<_>>(),
-                    // .collect::<Vec<_>>(),
-                    v,
-                )
-            })
+            .map(|(k, v)| (json_tools::path_segments::parse(k), v))
+            //.map(|(k, v)| (parse_path(k).collect::<Vec<_>>(), v))
             .collect::<Vec<_>>();
 
         let mut root = Value::Object(Map::new());
