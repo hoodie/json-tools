@@ -3,7 +3,7 @@ use serde_json::Value;
 use std::error::Error;
 
 fn needs_quotes(input: &str) -> bool {
-    input.contains(|c| matches!(c, '.' | '@' | '=' | ' ' | '\x09'..='\x0d'| '0'..='9'))
+    input.contains(|c| matches!(c, '.' | '-' | '@' | '=' | ' ' | '\x09'..='\x0d'| '0'..='9'))
 }
 
 fn dot<'a>(input: &str, sep: &'a str) -> &'a str {
@@ -38,7 +38,7 @@ fn flatten(trail: &str, paths: &mut Vec<String>, value: &Value) {
             for (k, v) in o {
                 flatten(
                     &(if needs_quotes(k) {
-                        [trail, dot(trail, "."), &serde_json::to_string(&k).unwrap()].concat()
+                        [trail, "[", &serde_json::to_string(&k).unwrap(), "]"].concat()
                     } else {
                         [trail, dot(trail, "."), k].concat()
                     }),

@@ -42,7 +42,7 @@ pub fn parse_split_smart<'a, E: ParseError<&'a str> + ContextError<&'a str>>(
     ))(input)
 }
 
-pub fn split_smart<'a>(input: &'a str) -> Vec<&'a str> {
+pub fn split_smart(input: &str) -> Vec<&str> {
     parse_split_smart::<nom::error::Error<&str>>(input)
         .finish()
         .unwrap()
