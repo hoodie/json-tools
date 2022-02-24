@@ -3,6 +3,7 @@ name = "json-tools"
 version = "0.1.0"
 authors = ["Hendrik Sollich <hendrik@hoodie.de>"]
 edition = "2021"
+rust-version = "1.59.0"
 
 [dependencies]
 serde = "1.0"
@@ -15,7 +16,7 @@ version = "0.5"
 features = ["preserve_order"]
 
 [dependencies.serde_json]
-version= "1.0"
+version = "1.0"
 features = ["preserve_order"]
 
 [[bin]]
@@ -43,6 +44,7 @@ name = "toml2json"
 name = "json2toml"
 
 [profile.release]
+strip = true
 opt-level = 'z'
 lto = true
 codegen-units = 1
