@@ -8,7 +8,7 @@ rust-version = "1.59.0"
 [dependencies]
 serde = "1.0"
 json5 = "0.4"
-serde_yaml = "0.8"
+serde_yaml = "0.9"
 nom = "8.0.0"
 
 [dependencies.toml]
@@ -51,4 +51,4 @@ codegen-units = 1
 panic = "abort"
 
 [dev-dependencies]
-pretty_assertions = "1.1.0"
+pretty_assertions = "1.4.1"
