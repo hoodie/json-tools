@@ -13,7 +13,6 @@ macro_rules! assert_parser {
     //     let result = $call.unwrap().1;
     //     assert_eq!(result, $expected);
     // }};
-
     ($parser1:ident, $parser2:ident, $line:expr, $expectation:expr) => {{
         assert_parser!($parser1, $line, $expectation);
         assert_parser!($parser2, $line, $expectation);
@@ -22,7 +21,7 @@ macro_rules! assert_parser {
     ($parser:ident, $line:expr, $expectation:expr) => {{
         match $parser::<(_, nom::error::ErrorKind)>(&$line) {
             Ok((rest, parsed)) => {
-                crate::assert::print_result($line, &rest, &parsed);
+                $crate::assert::print_result($line, &rest, &parsed);
                 pretty_assertions::assert_eq!(
                     parsed,
                     $expectation,
@@ -39,7 +38,7 @@ macro_rules! assert_parser {
 
     ($parser:ident, $line:expr, $expectation:expr, print) => {{
         let (rest, parsed) = $parser::<(_, nom::error::ErrorKind)>(&$line).unwrap();
-        crate::assert::print_result($line, &rest, &parsed);
+        $crate::assert::print_result($line, &rest, &parsed);
         pretty_assertions::assert_eq!(parsed, $expectation, "{:?} not parsed as expected", $line);
         assert!(rest.is_empty(), "not parsed completely");
 

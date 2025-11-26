@@ -2,8 +2,8 @@ use std::num::ParseIntError;
 
 use nom::{
     branch::alt,
-    bytes::complete::{escaped, tag, take_while, take_while1},
-    character::{complete::one_of, streaming::char},
+    bytes::complete::{escaped, tag, take_while1},
+    character::complete::{char, one_of},
     combinator::{complete, map, map_res, opt, value},
     error::{context, ContextError, FromExternalError, ParseError},
     multi::many0,
@@ -33,15 +33,12 @@ fn test_empty_index_segment() {
     assert!(index_segment::<nom::error::Error<&str>>( r#"[]"#).is_err());
 }
 
-pub fn index_segment<
-    'a,
-    E: ParseError<&'a str> + ContextError<&'a str> + FromExternalError<&'a str, ParseIntError>,
->(
+pub fn index_segment<'a, E: ParseError<&'a str> + FromExternalError<&'a str, ParseIntError>>(
     input: &'a str,
 ) -> IResult<&'a str, PathSegment<'a>, E> {
     map(
         map_res(
-            delimited(char('['), take_while(|a: char| a.is_numeric()), char(']')),
+            delimited(char('['), take_while1(char::is_numeric), char(']')),
             |index: &str| index.parse::<usize>(),
         ),
         PathSegment::Index,
@@ -58,12 +55,10 @@ fn test_name_segment() {
     assert_parser!(name_segment, path_segment,  r#"abc"#, Name("abc"));
 }
 
-pub fn name_segment<
-    'a,
-    E: ParseError<&'a str> + ContextError<&'a str> + FromExternalError<&'a str, ParseIntError>,
->(
-    input: &'a str,
-) -> IResult<&'a str, PathSegment<'a>, E> {
+pub fn name_segment<'a, E>(input: &'a str) -> IResult<&'a str, PathSegment<'a>, E>
+where
+    E: ParseError<&'a str> + ContextError<&'a str>,
+{
     map(
         // default case
         take_while1(|c| c != '[' && c != '.'),
@@ -99,10 +94,7 @@ fn test_quoted_name_segment() {
     assert_parser!(quoted_name_segment, path_segment, r#"["hello world"]"#, Name("hello world"));
 }
 
-pub fn quoted_name_segment<
-    'a,
-    E: ParseError<&'a str> + ContextError<&'a str> + FromExternalError<&'a str, ParseIntError>,
->(
+pub fn quoted_name_segment<'a, E: ParseError<&'a str> + ContextError<&'a str>>(
     input: &'a str,
 ) -> IResult<&'a str, PathSegment<'a>, E> {
     complete(map(

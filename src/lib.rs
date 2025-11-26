@@ -6,7 +6,7 @@ use std::{env, io};
 
 pub mod path_segments;
 
-#[cfg(all(test))]
+#[cfg(test)]
 #[macro_use]
 mod assert;
 
