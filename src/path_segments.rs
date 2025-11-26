@@ -3,12 +3,12 @@ use std::num::ParseIntError;
 use nom::{
     branch::alt,
     bytes::complete::{escaped, tag, take_while, take_while1},
-    character::complete::one_of,
+    character::{complete::one_of, streaming::char},
     combinator::{complete, map, map_res, opt, value},
     error::{context, ContextError, FromExternalError, ParseError},
     multi::many0,
     sequence::{delimited, terminated},
-    Finish, IResult,
+    Finish, IResult, Parser as _,
 };
 
 #[cfg(test)]
@@ -30,7 +30,7 @@ fn test_index_segment() {
 #[test]
 #[rustfmt::skip]
 fn test_empty_index_segment() {
-    assert!(index_segment::<nom::error::VerboseError<&str>>( r#"[]"#).is_err());
+    assert!(index_segment::<nom::error::Error<&str>>( r#"[]"#).is_err());
 }
 
 pub fn index_segment<
@@ -41,11 +41,12 @@ pub fn index_segment<
 ) -> IResult<&'a str, PathSegment<'a>, E> {
     map(
         map_res(
-            delimited(tag("["), take_while(|a: char| a.is_numeric()), tag("]")),
+            delimited(char('['), take_while(|a: char| a.is_numeric()), char(']')),
             |index: &str| index.parse::<usize>(),
         ),
         PathSegment::Index,
-    )(input)
+    )
+    .parse(input)
 }
 
 // ------------------------------------------------------
@@ -67,7 +68,8 @@ pub fn name_segment<
         // default case
         take_while1(|c| c != '[' && c != '.'),
         PathSegment::Name,
-    )(input)
+    )
+    .parse(input)
 }
 
 // ------------------------------------------------------
@@ -120,7 +122,8 @@ pub fn quoted_name_segment<
             ),
         )),
         PathSegment::Name,
-    ))(input)
+    ))
+    .parse(input)
 }
 
 // ------------------------------------------------------
@@ -161,7 +164,7 @@ pub fn path_segment<
 >(
     input: &'a str,
 ) -> IResult<&'a str, PathSegment<'a>, E> {
-    alt((index_segment, quoted_name_segment, name_segment))(input)
+    alt((index_segment, quoted_name_segment, name_segment)).parse(input)
 }
 
 pub fn path_segments<
@@ -170,11 +173,11 @@ pub fn path_segments<
 >(
     input: &'a str,
 ) -> IResult<&'a str, Vec<PathSegment<'a>>, E> {
-    many0(terminated(path_segment, opt(tag("."))))(input)
+    many0(terminated(path_segment, opt(tag(".")))).parse(input)
 }
 
-pub fn parse(input: &str) -> Vec<PathSegment> {
-    path_segments::<nom::error::VerboseError<&str>>(input)
+pub fn parse(input: &str) -> Vec<PathSegment<'_>> {
+    path_segments::<nom::error::Error<&str>>(input)
         .finish()
         .unwrap()
         .1

@@ -5,7 +5,6 @@ trait ValueExt {
     fn insert_into(&mut self, ps: &PathSegment, value: Value);
     fn get_ps(&self, ps: &PathSegment) -> Option<&Value>;
     fn get_ps_mut(&mut self, ps: &PathSegment) -> Option<&mut Value>;
-    fn has_ps(&self, ps: &PathSegment) -> bool;
 }
 
 impl ValueExt for Value {
@@ -33,10 +32,6 @@ impl ValueExt for Value {
             PathSegment::Name(s) => self.get_mut(s),
             PathSegment::Index(i) => self.get_mut(i),
         }
-    }
-
-    fn has_ps(&self, ps: &PathSegment) -> bool {
-        self.get_ps(ps).is_some()
     }
 }
 
