@@ -36,8 +36,8 @@ fn yaml_value_from_arg(arg: &str) -> Result<serde_yaml::Value, Box<dyn Error>> {
     Ok(serde_yaml::from_reader(readable)?)
 }
 
-fn toml_value_from_arg(arg: &str) -> Result<toml::Value, Box<dyn Error>> {
-    Ok(toml::Value::from_str(&string_from_arg(arg)?)?)
+fn toml_value_from_arg(arg: &str) -> Result<toml::Table, Box<dyn Error>> {
+    Ok(toml::Table::from_str(&string_from_arg(arg)?)?)
 }
 
 fn string_from_arg(arg: &str) -> Result<String, Box<dyn Error>> {
@@ -94,7 +94,7 @@ where
 
 pub fn with_toml_value<F>(closure: F) -> Result<(), Box<dyn Error>>
 where
-    F: Fn(toml::Value) -> Result<(), Box<dyn Error>>,
+    F: Fn(toml::Table) -> Result<(), Box<dyn Error>>,
 {
     if let Some(arg) = env::args().nth(1) {
         let content = self::toml_value_from_arg(&arg)?;
