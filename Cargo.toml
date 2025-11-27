@@ -26,6 +26,9 @@ name = "shrink-json"
 name = "flatten-json"
 
 [[bin]]
+name = "flatten-toml"
+
+[[bin]]
 name = "unflatten-json"
 
 [[bin]]
