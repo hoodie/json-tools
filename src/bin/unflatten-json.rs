@@ -52,7 +52,16 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             //.map(|(k, v)| (parse_path(k).collect::<Vec<_>>(), v))
             .collect::<Vec<_>>();
 
-        let mut root = Value::Object(Map::new());
+        let mut root = if unflattened
+            .first()
+            .and_then(|(segments, _)| segments.first())
+            .map(|seg| matches!(seg, PathSegment::Index(_)))
+            .unwrap_or(false)
+        {
+            Value::Array(Vec::new())
+        } else {
+            Value::Object(Map::new())
+        };
 
         for (segments, value) in unflattened {
             let value = value.expect("no single case!!!");
